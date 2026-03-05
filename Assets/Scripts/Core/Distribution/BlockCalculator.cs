@@ -16,7 +16,7 @@ namespace CardSelectionSystem.Core.Distribution
                 throw new ArgumentException("Item count cannot exceed total positions.");
 
             var blocks = new List<BlockRange>(itemCount);
-            float blockSize = (float)totalPositions / itemCount;
+            double blockSize = (double)totalPositions / itemCount;
 
             for (int i = 0; i < itemCount; i++)
             {

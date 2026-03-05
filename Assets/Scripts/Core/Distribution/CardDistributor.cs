@@ -7,8 +7,12 @@ namespace CardSelectionSystem.Core.Distribution
 {
     public class CardDistributor : IDistributor
     {
+        private const int MaxIterationsPerAttempt = 100_000;
+        private const int MaxAttempts = 10;
+
         private readonly BlockCalculator _blockCalculator;
         private readonly Random _random;
+        private int _iterationCount;
 
         public CardDistributor(BlockCalculator blockCalculator, int? seed = null)
         {
@@ -23,14 +27,15 @@ namespace CardSelectionSystem.Core.Distribution
 
             var placements = BuildPlacements(items, totalPositions);
 
-            // Stable sort by block width ascending (most constrained first),
-            // then shuffle within same-width groups for randomness
-            placements = SortAndShufflePlacements(placements);
+            for (int attempt = 0; attempt < MaxAttempts; attempt++)
+            {
+                var shuffled = SortAndShufflePlacements(placements);
+                var positions = new string[totalPositions];
+                _iterationCount = 0;
 
-            var positions = new string[totalPositions];
-
-            if (Place(positions, placements, 0))
-                return positions;
+                if (Place(positions, shuffled, 0))
+                    return positions;
+            }
 
             return null;
         }
@@ -121,6 +126,10 @@ namespace CardSelectionSystem.Core.Distribution
 
         private bool Place(string[] positions, List<Placement> placements, int index)
         {
+            _iterationCount++;
+            if (_iterationCount > MaxIterationsPerAttempt)
+                return false;
+
             if (index == placements.Count)
                 return true;
 
