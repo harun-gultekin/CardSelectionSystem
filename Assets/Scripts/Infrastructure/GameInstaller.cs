@@ -21,6 +21,10 @@ namespace CardSelectionSystem.Infrastructure
             var itemPool = ItemPoolFactory.CreateDefaultPool();
             var gameManager = new GameManager(distributor, validator, saveService, itemPool);
 
+            // Initialize core FIRST
+            gameManager.Initialize();
+
+            // Then initialize presentation
             debugPanel.Initialize(gameManager, validator, itemPool);
             gameplayController.Initialize(gameManager);
         }

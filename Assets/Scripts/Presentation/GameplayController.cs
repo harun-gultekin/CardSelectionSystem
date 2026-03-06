@@ -19,6 +19,7 @@ namespace CardSelectionSystem.Presentation
         private GameManager gameManager;
         private CardAnimator cardAnimator;
         private Dictionary<string, Sprite> itemSprites;
+        private Vector3 cardHomePosition;
         private GameState currentState;
         private bool isScreenDimmed;
 
@@ -38,7 +39,8 @@ namespace CardSelectionSystem.Presentation
 
             BuildSpriteDictionary();
 
-            gameManager.Initialize();
+            cardHomePosition = cardView.GetTransform().position;
+
             DealCard();
         }
 
@@ -60,11 +62,12 @@ namespace CardSelectionSystem.Presentation
         {
             currentState = GameState.Dealing;
 
-            cardView.ShowFaceDown();
             cardView.SetVisible(true);
+            cardView.ShowFaceDown();
 
             Transform cardTransform = cardView.GetTransform();
-            Vector3 targetPosition = cardTransform.position;
+            cardTransform.localScale = Vector3.one;
+            Vector3 targetPosition = cardHomePosition;
             float screenBottomY = GetScreenBottomY();
 
             cardAnimator.PlayDeal(cardTransform, targetPosition, screenBottomY)
@@ -126,7 +129,11 @@ namespace CardSelectionSystem.Presentation
             float screenTopY = GetScreenTopY();
 
             cardAnimator.PlayDiscard(cardTransform, screenTopY)
-                .OnComplete(() => DealCard());
+                .OnComplete(() =>
+                {
+                    cardView.SetVisible(false);
+                    DealCard();
+                });
         }
 
         private void Update()

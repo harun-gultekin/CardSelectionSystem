@@ -14,20 +14,38 @@
 | Splash Damage | item_splash_damage.png | 7 | #5cb85c | Green | Sp |
 | Shield | item_shield_orbital.png | 7 | #5cb85c | Green | Sh |
 
-## Card Visual Spec
-Face-down card:
-- Uses sprites from Sprites/Cards/ folder
-- Border color: #69748c (gray)
-
-Face-up card:
-- Displays: item sprite + item name text + colored background + colored border
-- Background AND border use the item's tier hex color
-- Reference image: Sprites/CardRef.png
-
-## Provided Assets
-- Sprites/Cards/ → card back/frame sprites
-- Sprites/Items/ → individual item sprites (may contain extra files beyond the 10 listed)
-- Sprites/CardRef.png → reference showing expected face-up card appearance
+## Card Visual Structure (multi-layered sprites)
+The card is NOT a single sprite. It's a parent GameObject with layered children.
+### Sprite Assets (Sprites/Cards/):
+- border.png (128x128, 9-slice) — outer card frame
+- card.png (128x128, 9-slice) — card background fill
+- header.png (90x90, 9-slice) — name banner at top of face-up card
+- itembg.png (110x110, 9-slice) — rounded rect behind item sprite
+- logo.png (290x252, normal) — mascot shown on face-down card
+### Card Hierarchy:
+Card (parent, BoxCollider2D, CardView script)
+  ├── Border (SpriteRenderer, sorting order 0)
+  ├── CardBg (SpriteRenderer, sorting order 1)
+  ├── Logo (SpriteRenderer, sorting order 2, face-down only)
+  ├── Header (SpriteRenderer, sorting order 2, face-up only)
+  ├── ItemBg (SpriteRenderer, sorting order 2, face-up only)
+  ├── ItemSprite (SpriteRenderer, sorting order 3, face-up only)
+  └── ItemName (TextMeshPro world space, sorting order 4, face-up only)
+### Face-down state:
+- border: visible, color #69748c (gray)
+- card: visible, color #69748c
+- logo: visible
+- header, itemBg, itemSprite, itemName: HIDDEN
+### Face-up state:
+- border: visible, color = tier hex color
+- card: visible, color = tier hex color
+- logo: HIDDEN
+- header: visible, color white
+- itemBg: visible, color white
+- itemSprite: visible, sprite = item sprite
+- itemName: visible, text = item name
+### Item sprites (Sprites/Items/):
+All 260x260, normal (not 9-slice).
 
 ## ScriptableObject Structure
 ```csharp

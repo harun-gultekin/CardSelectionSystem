@@ -41,8 +41,15 @@
 - Visually: card narrows as if turning sideways
 
 **Midpoint — Swap:**
-- At scale.x == 0: swap sprite from card back to card face
-- Card face shows: item sprite + item name + colored background + colored border
+- At scale.x == 0: call CardView.ShowFaceUp() which:
+  - Hides logo
+  - Shows header (white), itemBg (white), itemSprite, itemName
+  - Changes border and card color from gray to tier color
+  The onMidpoint callback in CardAnimator.PlayFlip handles this transition.
+  On deal (new round), CardView.ShowFaceDown() reverses this:
+  - Shows logo
+  - Hides header, itemBg, itemSprite, itemName
+  - Resets border and card color to gray
 - Purple/Gold: HOLD at zero width for pauseDuration before expanding
 
 **Phase 2 — Expand:**
