@@ -8,6 +8,8 @@ namespace CardSelectionSystem.Core.Models
         public string[] CycleSequence;
         public int CurrentRound;
 
+        public CycleState() { }
+
         public CycleState(string[] cycleSequence, int currentRound)
         {
             CycleSequence = cycleSequence;
