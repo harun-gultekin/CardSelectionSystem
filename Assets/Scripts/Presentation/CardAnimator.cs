@@ -28,7 +28,8 @@ namespace CardSelectionSystem.Presentation
             return sequence;
         }
 
-        public Sequence PlayFlip(Transform cardTransform, CardTier tier, Action onMidpoint, Action onGoldStart = null)
+        public Sequence PlayFlip(Transform cardTransform, CardTier tier,
+            Action onMidpoint, Tween preFadeIn = null, Action onExpandStart = null)
         {
             cardTransform.DOKill();
 
@@ -38,9 +39,10 @@ namespace CardSelectionSystem.Presentation
 
             var sequence = DOTween.Sequence();
 
-            if (tier == CardTier.Gold && onGoldStart != null)
+            // Pre-flip effect (e.g. screen dim for Gold) — sequence waits for completion
+            if (preFadeIn != null)
             {
-                sequence.AppendCallback(() => onGoldStart.Invoke());
+                sequence.Append(preFadeIn);
             }
 
             // Phase 1: Compress scale.x from 1 to 0
@@ -56,6 +58,12 @@ namespace CardSelectionSystem.Presentation
             if (midpointPause > 0f)
             {
                 sequence.AppendInterval(midpointPause);
+            }
+
+            // Trigger effect at start of expand phase (e.g. particle/glow for Gold)
+            if (onExpandStart != null)
+            {
+                sequence.AppendCallback(() => onExpandStart.Invoke());
             }
 
             // Phase 2: Expand scale.x from 0 to 1

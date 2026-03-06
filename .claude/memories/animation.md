@@ -76,10 +76,12 @@ PURPLE (Vampire, Titan):
 
 GOLD (Headshot, Sniper):
 - Duration: 1.2s total
-- Screen DIMS SLIGHTLY BEFORE the flip begins
+- Screen dims slightly BEFORE the flip begins (dim completes, then flip starts)
 - Holds at zero width for 0.3s at midpoint → longer suspense
-- When card expands to reveal: particle BURST or GLOW effect around card
-- Sequence: dim screen → compress → long pause → expand + particle → undim
+- When card expands to reveal: particle BURST or GLOW effect plays around card
+- Sequence: dim screen → WAIT for dim complete → compress → long pause → expand + particle/glow → undim
+- The dim tween must be PART of the DOTween Sequence (not a separate fire-and-forget tween)
+- Particle/glow effect triggers at the start of expand phase
 
 ### 3. DISCARD — Card exits screen
 - Triggered when player presses "Next Round" button

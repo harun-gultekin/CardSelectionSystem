@@ -11,6 +11,7 @@ namespace CardSelectionSystem.Presentation
         [SerializeField] private CardView cardView;
         [SerializeField] private AnimationConfig animationConfig;
         [SerializeField] private ScreenDimEffect screenDimEffect;
+        [SerializeField] private GoldRevealEffect goldRevealEffect;
         [SerializeField] private Camera mainCamera;
 
         [SerializeField] private Sprite[] itemSpriteArray;
@@ -90,21 +91,21 @@ namespace CardSelectionSystem.Presentation
 
             Transform cardTransform = cardView.GetTransform();
 
-            System.Action onGoldStart = null;
+            Tween preFadeIn = null;
+            System.Action onExpandStart = null;
             if (tier == CardTier.Gold)
             {
-                onGoldStart = () =>
-                {
-                    isScreenDimmed = true;
-                    screenDimEffect.FadeIn();
-                };
+                isScreenDimmed = true;
+                preFadeIn = screenDimEffect.FadeIn();
+                onExpandStart = () => goldRevealEffect.Play();
             }
 
             cardAnimator.PlayFlip(
                 cardTransform,
                 tier,
                 () => cardView.ShowFaceUp(itemName, itemSprite, tierColor),
-                onGoldStart
+                preFadeIn,
+                onExpandStart
             ).OnComplete(() =>
             {
                 gameManager.CompleteRound();
@@ -123,6 +124,7 @@ namespace CardSelectionSystem.Presentation
             {
                 isScreenDimmed = false;
                 screenDimEffect.FadeOut();
+                goldRevealEffect.Stop();
             }
 
             Transform cardTransform = cardView.GetTransform();
