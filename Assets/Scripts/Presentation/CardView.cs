@@ -9,6 +9,7 @@ namespace CardSelectionSystem.Presentation
         [SerializeField] private SpriteRenderer borderRenderer;
         [SerializeField] private SpriteRenderer cardRenderer;
         [SerializeField] private SpriteRenderer headerRenderer;
+        [SerializeField] private SpriteRenderer itemBorderRenderer;
         [SerializeField] private SpriteRenderer itemBgRenderer;
         [SerializeField] private SpriteRenderer itemSpriteRenderer;
         [SerializeField] private SpriteRenderer logoRenderer;
@@ -25,13 +26,14 @@ namespace CardSelectionSystem.Presentation
 
         private void SetSortingOrders()
         {
-            if (borderRenderer != null) borderRenderer.sortingOrder = 0;
-            if (cardRenderer != null) cardRenderer.sortingOrder = 1;
+            if (cardRenderer != null) cardRenderer.sortingOrder = 0;
+            if (borderRenderer != null) borderRenderer.sortingOrder = 1;
+            if (itemBorderRenderer != null) itemBorderRenderer.sortingOrder = 1;
             if (headerRenderer != null) headerRenderer.sortingOrder = 2;
             if (itemBgRenderer != null) itemBgRenderer.sortingOrder = 2;
             if (logoRenderer != null) logoRenderer.sortingOrder = 2;
             if (itemSpriteRenderer != null) itemSpriteRenderer.sortingOrder = 3;
-            if (itemNameText != null) itemNameText.sortingOrder = 4;
+            if (itemNameText != null) itemNameText.sortingOrder = 3;
         }
 
         public void ShowFaceDown()
@@ -53,6 +55,9 @@ namespace CardSelectionSystem.Presentation
 
             if (headerRenderer != null)
                 headerRenderer.enabled = false;
+
+            if (itemBorderRenderer != null)
+                itemBorderRenderer.enabled = false;
 
             if (itemBgRenderer != null)
                 itemBgRenderer.enabled = false;
@@ -76,6 +81,12 @@ namespace CardSelectionSystem.Presentation
             {
                 cardRenderer.enabled = true;
                 cardRenderer.color = tierColor;
+            }
+
+            if (itemBorderRenderer != null)
+            {
+                itemBorderRenderer.enabled = true;
+                itemBorderRenderer.color = tierColor;
             }
 
             if (logoRenderer != null)

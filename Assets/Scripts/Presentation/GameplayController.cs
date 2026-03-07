@@ -13,6 +13,7 @@ namespace CardSelectionSystem.Presentation
         [SerializeField] private ScreenDimEffect screenDimEffect;
         [SerializeField] private GoldRevealEffect goldRevealEffect;
         [SerializeField] private Camera mainCamera;
+        [SerializeField] private UnityEngine.UI.Button nextRoundButtonComponent;
 
         [SerializeField] private Sprite[] itemSpriteArray;
         [SerializeField] private string[] itemSpriteNames;
@@ -42,6 +43,9 @@ namespace CardSelectionSystem.Presentation
 
             cardHomePosition = cardView.GetTransform().position;
 
+            nextRoundButtonComponent.onClick.AddListener(OnNextRoundPressed);
+            nextRoundButtonComponent.gameObject.SetActive(false);
+
             DealCard();
         }
 
@@ -61,6 +65,7 @@ namespace CardSelectionSystem.Presentation
 
         private void DealCard()
         {
+            if (nextRoundButtonComponent != null) nextRoundButtonComponent.gameObject.SetActive(false);
             currentState = GameState.Dealing;
 
             cardView.SetVisible(true);
@@ -110,11 +115,14 @@ namespace CardSelectionSystem.Presentation
             {
                 gameManager.CompleteRound();
                 currentState = GameState.WaitingForConfirm;
+                nextRoundButtonComponent.gameObject.SetActive(true);
             });
         }
 
         public void OnNextRoundPressed()
         {
+            nextRoundButtonComponent.gameObject.SetActive(false);
+
             if (currentState != GameState.WaitingForConfirm)
                 return;
 

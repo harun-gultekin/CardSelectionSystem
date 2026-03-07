@@ -54,9 +54,9 @@ namespace CardSelectionSystem.Presentation
             var result = validator.Validate(sequence, itemPool, 50);
 
             if (result.IsValid)
-                validityText.text = "All 50/50 in block \u2705";
+                validityText.text = "<color=green>All 50/50 in block [OK]</color>";
             else
-                validityText.text = $"{result.ValidCount}/50 in block \u274C";
+                validityText.text = $"<color=red>{result.ValidCount}/50 in block [FAIL]</color>";
         }
 
         private string GetAbbreviation(string itemName)
