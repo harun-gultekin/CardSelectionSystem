@@ -113,6 +113,11 @@ namespace CardSelectionSystem.Presentation
                 onExpandStart
             ).OnComplete(() =>
             {
+                if (isScreenDimmed)
+                {
+                    isScreenDimmed = false;
+                    screenDimEffect.FadeOut();
+                }
                 gameManager.CompleteRound();
                 currentState = GameState.WaitingForConfirm;
                 nextRoundButtonComponent.gameObject.SetActive(true);
@@ -128,12 +133,7 @@ namespace CardSelectionSystem.Presentation
 
             currentState = GameState.Discarding;
 
-            if (isScreenDimmed)
-            {
-                isScreenDimmed = false;
-                screenDimEffect.FadeOut();
-                goldRevealEffect.Stop();
-            }
+            goldRevealEffect.Stop();
 
             Transform cardTransform = cardView.GetTransform();
             float screenTopY = GetScreenTopY();

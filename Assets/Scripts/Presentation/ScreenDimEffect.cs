@@ -7,7 +7,8 @@ namespace CardSelectionSystem.Presentation
     {
         [SerializeField] private SpriteRenderer dimRenderer;
         [SerializeField] private float dimAlpha = 0.4f;
-        [SerializeField] private float fadeDuration = 0.2f;
+        [SerializeField] private float fadeInDuration = 0.2f;
+        [SerializeField] private float fadeOutDuration = 0.2f;
 
         private void Awake()
         {
@@ -23,12 +24,12 @@ namespace CardSelectionSystem.Presentation
         public Tween FadeIn()
         {
             dimRenderer.enabled = true;
-            return dimRenderer.DOFade(dimAlpha, fadeDuration);
+            return dimRenderer.DOFade(dimAlpha, fadeInDuration);
         }
 
         public Tween FadeOut()
         {
-            return dimRenderer.DOFade(0f, fadeDuration)
+            return dimRenderer.DOFade(0f, fadeOutDuration)
                 .OnComplete(() => dimRenderer.enabled = false);
         }
     }
