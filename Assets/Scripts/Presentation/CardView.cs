@@ -28,12 +28,12 @@ namespace CardSelectionSystem.Presentation
         {
             if (cardRenderer != null) cardRenderer.sortingOrder = 0;
             if (borderRenderer != null) borderRenderer.sortingOrder = 1;
-            if (itemBorderRenderer != null) itemBorderRenderer.sortingOrder = 1;
-            if (headerRenderer != null) headerRenderer.sortingOrder = 2;
-            if (itemBgRenderer != null) itemBgRenderer.sortingOrder = 2;
+            if (headerRenderer != null) headerRenderer.sortingOrder = 1;
+            if (itemBgRenderer != null) itemBgRenderer.sortingOrder = 1;
             if (logoRenderer != null) logoRenderer.sortingOrder = 2;
+            if (itemNameText != null) itemNameText.sortingOrder = 2;
+            if (itemBorderRenderer != null) itemBorderRenderer.sortingOrder = 3;
             if (itemSpriteRenderer != null) itemSpriteRenderer.sortingOrder = 3;
-            if (itemNameText != null) itemNameText.sortingOrder = 3;
         }
 
         public void ShowFaceDown()
