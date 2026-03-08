@@ -14,6 +14,10 @@ begins automatically.
 - Press Play
 - Tap the card to flip, press "Next Round" to continue
 
+## Gameplay Preview
+
+![Gameplay](Docs/gameplay.gif)
+
 ## Architecture
 
 ### Layer Separation
@@ -131,3 +135,24 @@ layer pure C# and fully testable.
 
 Unit tests need pure C# item definitions without Unity Editor dependency.
 ItemPoolFactory provides test data. Runtime uses ItemDatabase ScriptableObject.
+
+## AI-Assisted Development
+
+This project was developed with Claude Code as an AI pair-programming tool.
+The `.claude/` directory contains project memory files that provide Claude
+with architectural context, algorithm specifications, and design constraints.
+
+### Memory File Structure
+
+- `CLAUDE.md` — project overview, tech stack, critical rules
+- `memories/architecture.md` — DI pattern, separation of concerns
+- `memories/distribution.md` — algorithm details, block calculation
+- `memories/animation.md` — animation specs, easing curves, tier behaviors
+- `memories/persistence.md` — save/load system
+- `memories/item-data.md` — item pool, card visual structure
+- `memories/game-flow.md` — round sequence, debug panel, screen adaptation
+
+This structure enables focused, context-aware prompts — each system has
+its own memory file that Claude reads before generating or modifying code.
+
+All generated code was reviewed, tested, and understood before submission.
