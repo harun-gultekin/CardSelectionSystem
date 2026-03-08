@@ -14,10 +14,6 @@ begins automatically.
 - Press Play
 - Tap the card to flip, press "Next Round" to continue
 
-## Gameplay Preview
-
-![Gameplay](Docs/gameplay.gif)
-
 ## Architecture
 
 ### Layer Separation
