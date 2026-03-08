@@ -110,6 +110,8 @@ Run via Window > General > Test Runner > EditMode > Run All
 
 Portrait mode, adapts to all aspect ratios from 3:4 (tablets) to 9:21
 (narrow phones) via dynamic camera orthographic size calculation.
+Safe area handling ensures UI elements avoid notches, Dynamic Island, 
+and home bar indicators on modern devices.
 
 ## Technical Decisions
 

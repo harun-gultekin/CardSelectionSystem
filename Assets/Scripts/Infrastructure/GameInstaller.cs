@@ -17,6 +17,9 @@ namespace CardSelectionSystem.Infrastructure
 
         private void Start()
         {
+            Application.targetFrameRate = 60;
+            QualitySettings.vSyncCount = 0;
+
             var blockCalculator = new BlockCalculator();
             var distributor = new CardDistributor(blockCalculator);
             var validator = new DistributionValidator(blockCalculator);
