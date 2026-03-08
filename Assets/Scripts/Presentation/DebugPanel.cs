@@ -31,7 +31,8 @@ namespace CardSelectionSystem.Presentation
 
         public void UpdateDisplay()
         {
-            roundText.text = $"Round {gameManager.CurrentRound} / 50";
+            int total = gameManager.TotalPositions;
+            roundText.text = $"Round {gameManager.CurrentRound} / {total}";
 
             var sequence = gameManager.CurrentSequence;
             var sb = new StringBuilder();
@@ -51,12 +52,12 @@ namespace CardSelectionSystem.Presentation
 
             sequenceText.text = sb.ToString();
 
-            var result = validator.Validate(sequence, itemPool, 50);
+            var result = validator.Validate(sequence, itemPool, total);
 
             if (result.IsValid)
-                validityText.text = "<color=green>All 50/50 in block [OK]</color>";
+                validityText.text = $"<color=green>All {total}/{total} in block [OK]</color>";
             else
-                validityText.text = $"<color=red>{result.ValidCount}/50 in block [FAIL]</color>";
+                validityText.text = $"<color=red>{result.ValidCount}/{total} in block [FAIL]</color>";
         }
 
         private string GetAbbreviation(string itemName)

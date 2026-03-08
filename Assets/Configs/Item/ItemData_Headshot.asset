@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a245729e2953b47fca5efffd23b52936, type: 3}
+  m_Name: ItemData_Headshot
+  m_EditorClassIdentifier: 
+  itemName: Headshot
+  cardsPerCycle: 2
+  tier: 3
+  tierColor: {r: 0.9882353, g: 0.7647059, b: 0.14509805, a: 0}
+  colorHex: '#fcc325'
+  abbreviation: Hs
+  itemSprite: {fileID: 21300000, guid: 678b65a0df1ee46d39ddebf5930308d9, type: 3}

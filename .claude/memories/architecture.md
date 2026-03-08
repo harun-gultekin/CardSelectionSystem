@@ -1,24 +1,30 @@
 # Architecture
 
 ## DI Pattern — Manual Constructor Injection
-Single GameInstaller MonoBehaviour creates and wires all services in Awake().
+Single GameInstaller MonoBehaviour creates and wires all services in Start().
 No DI framework needed. This demonstrates DI understanding without unnecessary overhead.
 
 ```csharp
 public class GameInstaller : MonoBehaviour {
-    [SerializeField] private AnimationConfig animConfig;
+    [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private AnimationConfig animationConfig;
     [SerializeField] private CardView cardView;
+    [SerializeField] private GameplayController gameplayController;
     [SerializeField] private DebugPanel debugPanel;
-    
-    void Awake() {
+
+    void Start() {
         var blockCalculator = new BlockCalculator();
         var distributor = new CardDistributor(blockCalculator);
         var validator = new DistributionValidator(blockCalculator);
         var saveService = new JsonSaveService();
-        var gameManager = new GameManager(distributor, validator, saveService);
-        var animator = new CardAnimator(animConfig);
-        cardView.Initialize(gameManager, animator);
-        debugPanel.Initialize(gameManager, validator);
+        var itemPool = itemDatabase.ToItemConfigList();
+        var spriteDictionary = itemDatabase.BuildSpriteDictionary();
+        var gameManager = new GameManager(distributor, validator, saveService, itemPool);
+        var cardAnimator = new CardAnimator(animationConfig);
+
+        gameManager.Initialize();
+        debugPanel.Initialize(gameManager, validator, itemPool);
+        gameplayController.Initialize(gameManager, cardAnimator, spriteDictionary);
     }
 }
 ```
@@ -34,12 +40,15 @@ public class GameInstaller : MonoBehaviour {
 | Presentation/CardView | Sprite display, tap input | Algorithm, file I/O, block math |
 | Presentation/CardAnimator | Tween/easing animations | Algorithm, state, file I/O |
 | Presentation/DebugPanel | Debug info display | Algorithm internals, file I/O |
+| Core/Models/ItemDatabase | Item data source (ScriptableObject) | Algorithm, animation |
 | Infrastructure/GameInstaller | Creates and wires everything | Business logic details |
 
 ## Interfaces
 - IDistributor → CardDistributor (method: Generate)
 - ISaveService → JsonSaveService (methods: Save, Load)
 - IDistributionValidator → DistributionValidator (method: Validate)
+- ItemData.ToItemConfig() bridges ScriptableObject → pure C# for algorithm
+- ItemDatabase.BuildSpriteDictionary() bridges ScriptableObject → presentation
 
 ## Explicit Case Constraints (Technical Constraints section)
 - NO FindObjectOfType

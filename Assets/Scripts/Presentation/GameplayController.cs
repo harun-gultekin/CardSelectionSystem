@@ -9,14 +9,10 @@ namespace CardSelectionSystem.Presentation
     public class GameplayController : MonoBehaviour
     {
         [SerializeField] private CardView cardView;
-        [SerializeField] private AnimationConfig animationConfig;
         [SerializeField] private ScreenDimEffect screenDimEffect;
         [SerializeField] private GoldRevealEffect goldRevealEffect;
         [SerializeField] private Camera mainCamera;
         [SerializeField] private UnityEngine.UI.Button nextRoundButtonComponent;
-
-        [SerializeField] private Sprite[] itemSpriteArray;
-        [SerializeField] private string[] itemSpriteNames;
 
         private GameManager gameManager;
         private CardAnimator cardAnimator;
@@ -34,12 +30,12 @@ namespace CardSelectionSystem.Presentation
             Discarding
         }
 
-        public void Initialize(GameManager gameManager)
+        public void Initialize(GameManager gameManager, CardAnimator cardAnimator,
+            Dictionary<string, Sprite> itemSprites)
         {
             this.gameManager = gameManager;
-            cardAnimator = new CardAnimator(animationConfig);
-
-            BuildSpriteDictionary();
+            this.cardAnimator = cardAnimator;
+            this.itemSprites = itemSprites;
 
             cardHomePosition = cardView.GetTransform().position;
 
@@ -47,20 +43,6 @@ namespace CardSelectionSystem.Presentation
             nextRoundButtonComponent.gameObject.SetActive(false);
 
             DealCard();
-        }
-
-        private void BuildSpriteDictionary()
-        {
-            itemSprites = new Dictionary<string, Sprite>();
-
-            if (itemSpriteArray == null || itemSpriteNames == null)
-                return;
-
-            int count = Mathf.Min(itemSpriteArray.Length, itemSpriteNames.Length);
-            for (int i = 0; i < count; i++)
-            {
-                itemSprites[itemSpriteNames[i]] = itemSpriteArray[i];
-            }
         }
 
         private void DealCard()

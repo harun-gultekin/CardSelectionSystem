@@ -9,24 +9,26 @@ namespace CardSelectionSystem.Infrastructure
 {
     public class GameInstaller : MonoBehaviour
     {
+        [SerializeField] private ItemDatabase itemDatabase;
+        [SerializeField] private AnimationConfig animationConfig;
         [SerializeField] private CardView cardView;
         [SerializeField] private GameplayController gameplayController;
         [SerializeField] private DebugPanel debugPanel;
+
         private void Start()
         {
             var blockCalculator = new BlockCalculator();
             var distributor = new CardDistributor(blockCalculator);
             var validator = new DistributionValidator(blockCalculator);
             var saveService = new JsonSaveService();
-            var itemPool = ItemPoolFactory.CreateDefaultPool();
+            var itemPool = itemDatabase.ToItemConfigList();
+            var spriteDictionary = itemDatabase.BuildSpriteDictionary();
             var gameManager = new GameManager(distributor, validator, saveService, itemPool);
+            var cardAnimator = new CardAnimator(animationConfig);
 
-            // Initialize core FIRST
             gameManager.Initialize();
-
-            // Then initialize presentation
             debugPanel.Initialize(gameManager, validator, itemPool);
-            gameplayController.Initialize(gameManager);
+            gameplayController.Initialize(gameManager, cardAnimator, spriteDictionary);
         }
     }
 }

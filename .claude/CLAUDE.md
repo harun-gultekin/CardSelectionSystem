@@ -19,6 +19,7 @@ feel per rarity. Single scene, no menu, no audio.
 - Scripts/Core/Persistence/ → JSON save/load
 - Scripts/Presentation/ → UI, animation, visuals (MonoBehaviours)
 - Scripts/Infrastructure/ → DI wiring (GameInstaller)
+- Config/ → ScriptableObject assets (ItemDatabase, individual ItemData assets)
 - Tests/EditMode/ → unit tests (NUnit, no scene required)
 
 ## Dependency Rule
@@ -50,3 +51,5 @@ singletons, no scene-search patterns.
 - Unit tests for distribution are a significant plus
 - Algorithm must detect impossible configurations
 - At least 3 visually distinct easing curves across animations
+- Item configuration is data-driven via ScriptableObjects — adding/removing items requires zero code changes
+- CardAnimator is created in GameInstaller and injected into GameplayController

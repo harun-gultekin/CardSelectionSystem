@@ -13,11 +13,13 @@ namespace CardSelectionSystem.Core
         private readonly IDistributionValidator validator;
         private readonly ISaveService saveService;
         private readonly List<ItemConfig> itemPool;
+        private readonly int totalPositions;
 
         public string[] CurrentSequence { get; private set; }
         public int CurrentRound { get; private set; }
         public string CurrentItemName => CurrentSequence[CurrentRound - 1];
-        public bool IsCycleComplete => CurrentRound > 50;
+        public bool IsCycleComplete => CurrentRound > totalPositions;
+        public int TotalPositions => totalPositions;
 
         public event Action<int> OnRoundChanged;
         public event Action OnCycleCompleted;
@@ -32,21 +34,27 @@ namespace CardSelectionSystem.Core
             this.validator = validator;
             this.saveService = saveService;
             this.itemPool = itemPool;
+            totalPositions = itemPool.Sum(i => i.CardsPerCycle);
         }
 
         public void Initialize()
         {
             var savedState = saveService.Load();
 
-            if (savedState != null && savedState.CycleSequence != null && savedState.CycleSequence.Length == 50)
+            if (savedState != null && savedState.CycleSequence != null && savedState.CycleSequence.Length == totalPositions)
             {
-                CurrentSequence = savedState.CycleSequence;
-                CurrentRound = savedState.CurrentRound;
+                var validNames = new HashSet<string>(itemPool.Select(i => i.Name));
+                bool isCompatible = savedState.CycleSequence.All(name => validNames.Contains(name));
+
+                if (isCompatible)
+                {
+                    CurrentSequence = savedState.CycleSequence;
+                    CurrentRound = savedState.CurrentRound;
+                    return;
+                }
             }
-            else
-            {
-                StartNewCycle();
-            }
+
+            StartNewCycle();
         }
 
         public ItemConfig GetCurrentItem()
@@ -59,7 +67,7 @@ namespace CardSelectionSystem.Core
         {
             CurrentRound++;
 
-            if (CurrentRound > 50)
+            if (CurrentRound > totalPositions)
             {
                 OnCycleCompleted?.Invoke();
                 StartNewCycle();
@@ -74,7 +82,7 @@ namespace CardSelectionSystem.Core
 
         public void StartNewCycle()
         {
-            CurrentSequence = distributor.Generate(itemPool);
+            CurrentSequence = distributor.Generate(itemPool, totalPositions);
             CurrentRound = 1;
             saveService.Save(new CycleState(CurrentSequence, CurrentRound));
         }

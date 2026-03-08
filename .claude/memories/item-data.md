@@ -52,13 +52,32 @@ All 260x260, normal (not 9-slice).
 [CreateAssetMenu(fileName = "ItemData", menuName = "Game/Item Data")]
 public class ItemData : ScriptableObject {
     public string itemName;
-    public string abbreviation;  // for debug panel
-    public Sprite itemSprite;
-    public Color tierColor;       // parsed from hex
-    public CardTier tier;
     public int cardsPerCycle;
+    public CardTier tier;
+    public Color tierColor;
+    public string colorHex;
+    public string abbreviation;
+    public Sprite itemSprite;
+
+    public ItemConfig ToItemConfig() {
+        return new ItemConfig(itemName, cardsPerCycle, tier, colorHex, abbreviation);
+    }
+}
+
+[CreateAssetMenu(fileName = "ItemDatabase", menuName = "Game/Item Database")]
+public class ItemDatabase : ScriptableObject {
+    public List<ItemData> items;
+
+    public List<ItemConfig> ToItemConfigList()
+        => items.Select(i => i.ToItemConfig()).ToList();
+
+    public Dictionary<string, Sprite> BuildSpriteDictionary()
+        => items.ToDictionary(i => i.itemName, i => i.itemSprite);
 }
 ```
+
+ItemPoolFactory remains for unit tests. Runtime uses ItemDatabase
+ScriptableObject which is configured entirely in Inspector.
 
 ## CardTier Enum
 ```csharp
