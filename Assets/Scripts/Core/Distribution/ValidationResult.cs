@@ -4,14 +4,13 @@ namespace CardSelectionSystem.Core.Distribution
 {
     public class ValidationResult
     {
-        public bool IsValid { get; }
+        public bool IsValid => Errors.Count == 0;
         public int ValidCount { get; }
         public int TotalCount { get; }
         public List<string> Errors { get; }
 
-        public ValidationResult(bool isValid, int validCount, int totalCount, List<string> errors)
+        public ValidationResult(int validCount, int totalCount, List<string> errors)
         {
-            IsValid = isValid;
             ValidCount = validCount;
             TotalCount = totalCount;
             Errors = errors;

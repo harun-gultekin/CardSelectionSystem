@@ -23,7 +23,7 @@ namespace CardSelectionSystem.Core.Distribution
             if (sequence == null || sequence.Length != totalPositions)
             {
                 errors.Add($"Sequence length is {sequence?.Length ?? 0}, expected {totalPositions}.");
-                return new ValidationResult(false, 0, totalCount, errors);
+                return new ValidationResult(0, totalCount, errors);
             }
 
             // Check 2: each item appears exactly cardsPerCycle times
@@ -56,7 +56,7 @@ namespace CardSelectionSystem.Core.Distribution
 
             if (errors.Count > 0)
             {
-                return new ValidationResult(false, 0, totalCount, errors);
+                return new ValidationResult(0, totalCount, errors);
             }
 
             // Check 3: for each item, verify the i-th occurrence is within block[i]
@@ -89,8 +89,7 @@ namespace CardSelectionSystem.Core.Distribution
                 }
             }
 
-            bool isValid = errors.Count == 0;
-            return new ValidationResult(isValid, validCount, totalCount, errors);
+            return new ValidationResult(validCount, totalCount, errors);
         }
     }
 }
