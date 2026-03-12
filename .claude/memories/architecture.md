@@ -50,6 +50,14 @@ public class GameInstaller : MonoBehaviour {
 - ItemData.ToItemConfig() bridges ScriptableObject → pure C# for algorithm
 - ItemDatabase.BuildSpriteDictionary() bridges ScriptableObject → presentation
 
+## State Machine Pattern (Presentation Layer)
+GameplayController uses a proper FSM with each state as a separate class.
+States implement IGameState interface (Enter, Exit, Update, OnCardTapped, OnNextRoundPressed).
+GameContext holds shared dependencies. States request transitions via
+context.RequestTransition callback. Adding new features (e.g. skip) means
+adding a method to IGameState and implementing it per-state — no if/else chains.
+States: DealingState → WaitingForTapState → FlippingState → WaitingForConfirmState → DiscardingState → DealingState
+
 ## Explicit Case Constraints (Technical Constraints section)
 - NO FindObjectOfType
 - NO static singletons

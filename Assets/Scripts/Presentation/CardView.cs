@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -5,6 +6,8 @@ namespace CardSelectionSystem.Presentation
 {
     public class CardView : MonoBehaviour
     {
+        public event Action OnTapped;
+
         [Header("Card Layers (back to front)")]
         [SerializeField] private SpriteRenderer borderRenderer;
         [SerializeField] private SpriteRenderer cardRenderer;
@@ -115,6 +118,11 @@ namespace CardSelectionSystem.Presentation
                 itemNameText.enabled = true;
                 itemNameText.text = itemName;
             }
+        }
+
+        private void OnMouseDown()
+        {
+            OnTapped?.Invoke();
         }
 
         public void SetVisible(bool visible)

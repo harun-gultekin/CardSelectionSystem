@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using CardSelectionSystem.Core;
-using CardSelectionSystem.Core.Models;
+using CardSelectionSystem.Presentation.StateMachine;
 
 namespace CardSelectionSystem.Presentation
 {
@@ -14,158 +13,36 @@ namespace CardSelectionSystem.Presentation
         [SerializeField] private Camera mainCamera;
         [SerializeField] private UnityEngine.UI.Button nextRoundButtonComponent;
 
-        private GameManager gameManager;
-        private CardAnimator cardAnimator;
-        private Dictionary<string, Sprite> itemSprites;
-        private Vector3 cardHomePosition;
-        private GameState currentState;
-        private bool isScreenDimmed;
-
-        private enum GameState
-        {
-            Dealing,
-            WaitingForTap,
-            Flipping,
-            WaitingForConfirm,
-            Discarding
-        }
+        private IGameState currentState;
+        private GameContext context;
 
         public void Initialize(GameManager gameManager, CardAnimator cardAnimator,
             Dictionary<string, Sprite> itemSprites)
         {
-            this.gameManager = gameManager;
-            this.cardAnimator = cardAnimator;
-            this.itemSprites = itemSprites;
+            Vector3 cardHomePosition = cardView.GetTransform().position;
 
-            cardHomePosition = cardView.GetTransform().position;
+            context = new GameContext(
+                cardView, cardAnimator, gameManager,
+                screenDimEffect, goldRevealEffect, mainCamera,
+                nextRoundButtonComponent, itemSprites, cardHomePosition
+            );
 
-            nextRoundButtonComponent.onClick.AddListener(OnNextRoundPressed);
-            nextRoundButtonComponent.gameObject.SetActive(false);
+            context.RequestTransition = TransitionTo;
+            nextRoundButtonComponent.onClick.AddListener(() => currentState?.OnNextRoundPressed());
 
-            DealCard();
+            TransitionTo(new DealingState(context));
         }
 
-        private void DealCard()
+        private void TransitionTo(IGameState newState)
         {
-            if (nextRoundButtonComponent != null) nextRoundButtonComponent.gameObject.SetActive(false);
-            currentState = GameState.Dealing;
-
-            cardView.SetVisible(true);
-            cardView.ShowFaceDown();
-
-            Transform cardTransform = cardView.GetTransform();
-            cardTransform.localScale = Vector3.one;
-            Vector3 targetPosition = cardHomePosition;
-            float screenBottomY = GetScreenBottomY();
-
-            cardAnimator.PlayDeal(cardTransform, targetPosition, screenBottomY)
-                .OnComplete(() => currentState = GameState.WaitingForTap);
-        }
-
-        private void OnCardTapped()
-        {
-            if (currentState != GameState.WaitingForTap)
-                return;
-
-            currentState = GameState.Flipping;
-
-            ItemConfig currentItem = gameManager.GetCurrentItem();
-            string itemName = currentItem.Name;
-            CardTier tier = currentItem.Tier;
-            Color tierColor = ParseHexColor(currentItem.ColorHex);
-
-            itemSprites.TryGetValue(itemName, out Sprite itemSprite);
-
-            Transform cardTransform = cardView.GetTransform();
-
-            Tween preFadeIn = null;
-            System.Action onExpandStart = null;
-            if (tier == CardTier.Gold)
-            {
-                isScreenDimmed = true;
-                preFadeIn = screenDimEffect.FadeIn();
-                onExpandStart = () => goldRevealEffect.Play();
-            }
-
-            cardAnimator.PlayFlip(
-                cardTransform,
-                tier,
-                () => cardView.ShowFaceUp(itemName, itemSprite, tierColor),
-                preFadeIn,
-                onExpandStart
-            ).OnComplete(() =>
-            {
-                if (isScreenDimmed)
-                {
-                    isScreenDimmed = false;
-                    screenDimEffect.FadeOut();
-                }
-                gameManager.CompleteRound();
-                currentState = GameState.WaitingForConfirm;
-                nextRoundButtonComponent.gameObject.SetActive(true);
-            });
-        }
-
-        public void OnNextRoundPressed()
-        {
-            nextRoundButtonComponent.gameObject.SetActive(false);
-
-            if (currentState != GameState.WaitingForConfirm)
-                return;
-
-            currentState = GameState.Discarding;
-
-            goldRevealEffect.Stop();
-
-            Transform cardTransform = cardView.GetTransform();
-            float screenTopY = GetScreenTopY();
-
-            cardAnimator.PlayDiscard(cardTransform, screenTopY)
-                .OnComplete(() =>
-                {
-                    cardView.SetVisible(false);
-                    DealCard();
-                });
+            currentState?.Exit();
+            currentState = newState;
+            currentState.Enter();
         }
 
         private void Update()
         {
-            if (currentState != GameState.WaitingForTap)
-                return;
-
-            if (!Input.GetMouseButtonDown(0))
-                return;
-
-            Vector3 worldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
-
-            if (hit.collider != null && hit.collider.transform == cardView.GetTransform())
-            {
-                OnCardTapped();
-            }
-        }
-
-        private float GetScreenBottomY()
-        {
-            float bottomY = mainCamera.ViewportToWorldPoint(new Vector3(0f, 0f, 0f)).y;
-            SpriteRenderer sr = cardView.GetComponentInChildren<SpriteRenderer>();
-            float cardHeight = sr != null ? sr.bounds.size.y : 2f;
-            return bottomY - cardHeight;
-        }
-
-        private float GetScreenTopY()
-        {
-            float topY = mainCamera.ViewportToWorldPoint(new Vector3(0f, 1f, 0f)).y;
-            SpriteRenderer sr = cardView.GetComponentInChildren<SpriteRenderer>();
-            float cardHeight = sr != null ? sr.bounds.size.y : 2f;
-            return topY + cardHeight;
-        }
-
-        private Color ParseHexColor(string hex)
-        {
-            if (ColorUtility.TryParseHtmlString(hex, out Color color))
-                return color;
-            return Color.white;
+            currentState?.Update();
         }
     }
 }

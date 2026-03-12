@@ -56,6 +56,12 @@ Examples:
 - Consider using Camera.orthographicSize or Canvas scaling
 - Debug panel should not overlap with card area
 
+## State Machine
+Each round phase is a separate state class implementing IGameState.
+Transitions are explicit: each state creates the next state and requests transition.
+New features (skip, undo, etc.) only require adding methods to IGameState and
+implementing per-state — existing state code doesn't need modification (Open/Closed Principle).
+
 ## What NOT to Build
 - No main menu or navigation flow
 - No sound effects or music

@@ -18,6 +18,7 @@ feel per rarity. Single scene, no menu, no audio.
 - Scripts/Core/Models/ → data classes, enums, configs
 - Scripts/Core/Persistence/ → JSON save/load
 - Scripts/Presentation/ → UI, animation, visuals (MonoBehaviours)
+- Scripts/Presentation/StateMachine/ → FSM states and context
 - Scripts/Infrastructure/ → DI wiring (GameInstaller)
 - Config/ → ScriptableObject assets (ItemDatabase, individual ItemData assets)
 - Tests/EditMode/ → unit tests (NUnit, no scene required)
