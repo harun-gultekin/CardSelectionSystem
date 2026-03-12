@@ -29,7 +29,9 @@ The project follows strict separation of concerns with three layers:
 **Presentation** (Unity MonoBehaviours):
 - Card visuals (CardView — multi-layered SpriteRenderers)
 - Code-driven animations (CardAnimator — DOTween, 4 distinct easing curves)
-- Game loop orchestration (GameplayController — state machine)
+- Game loop orchestration (GameplayController — Finite State Machine with
+  5 state classes: DealingState, WaitingForTapState, FlippingState,
+  WaitingForConfirmState, DiscardingState)
 - Debug display (DebugPanel — round counter, sequence, block validity)
 - Screen adaptation (CameraScaler — dynamic orthographic sizing)
 - Gold effects (ScreenDimEffect, GoldRevealEffect — ParticleSystem)
@@ -46,6 +48,25 @@ Manual constructor injection without a DI framework. All game logic classes
 receive dependencies through constructors. GameInstaller creates and wires
 everything in `Start()`. No `FindObjectOfType`, no static singletons, no
 scene-search patterns.
+
+### Finite State Machine
+
+The gameplay flow uses a proper FSM pattern where each game phase is a
+separate class implementing IGameState (Enter, Exit, Update, OnCardTapped,
+OnNextRoundPressed). GameContext holds shared dependencies for all states.
+GameplayController acts as a thin driver (~45 lines) that manages transitions.
+
+States: Dealing → WaitingForTap → Flipping → WaitingForConfirm → Discarding → Dealing
+
+This replaces the original enum-based approach where all state logic lived
+in a single class with if/else checks. The FSM design follows the
+Open/Closed Principle — adding features like skip requires only adding a
+method to IGameState and implementing it per-state, with zero changes to
+existing state code.
+
+CardView detects its own taps via OnMouseDown and fires an OnTapped event.
+States subscribe/unsubscribe in Enter/Exit, maintaining clean separation
+of concerns.
 
 ### Data-Driven Item Configuration
 
@@ -126,6 +147,16 @@ VContainer would be appropriate for a larger project.
 Decouples game data from code. Designers can add/remove items without
 programmer involvement. The `ToItemConfig()` bridge keeps the algorithm
 layer pure C# and fully testable.
+
+### Why Finite State Machine over enum-based states?
+
+The original enum approach put all state logic in one class with if/else
+guards. Adding a feature like skip would require touching every method and
+adding branches for each state. With the FSM, each state is isolated —
+adding skip means implementing OnSkip() per-state without modifying
+existing code. The pattern also enforces Enter/Exit symmetry for clean
+setup and teardown (e.g., WaitingForConfirmState shows the button in
+Enter, hides it in Exit — no other state manages button visibility).
 
 ### Why ItemPoolFactory still exists?
 
